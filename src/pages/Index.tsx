@@ -159,6 +159,24 @@ ${ingredients.map(ingredient => `• ${ingredient}`).join('\n')}
           {(recipe || loading) && (
             <RecipeDisplay recipe={recipe} loading={loading} />
           )}
+          
+          {/* Footer */}
+          <footer className="mt-16 pt-6 border-t border-gray-200">
+            <div className="text-center text-gray-600 text-sm italic">
+              <p>
+                © {new Date().getFullYear()} Chefy by Siruyy | 
+                Made with React, Tailwind CSS, and AI-powered recipe generation | 
+                <a 
+                  href="https://github.com/Siruyy/chefy" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-gray-600 underline hover:text-gray-800 transition-colors ml-1"
+                >
+                  View on GitHub
+                </a>
+              </p>
+            </div>
+          </footer>
         </div>
       </div>
     </div>
