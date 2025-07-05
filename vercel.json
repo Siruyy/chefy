@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "routes": [
+    {
+      "src": "/api/generate-recipe",
+      "dest": "/api/generate-recipe.js"
+    }
+  ]
+} 
