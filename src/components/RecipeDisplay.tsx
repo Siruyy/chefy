@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 interface RecipeDisplayProps {
@@ -36,7 +35,7 @@ const RecipeDisplay: React.FC<RecipeDisplayProps> = ({ recipe, loading }) => {
         continue;
       }
 
-      // Recipe title (starts with # or **Title**)
+      // Main Recipe title (starts with # or **Title**)
       if (line.startsWith('# ') || (line.startsWith('**') && line.endsWith('**') && !line.includes(':'))) {
         const title = line.replace(/^#+\s*/, '').replace(/^\*\*/, '').replace(/\*\*$/, '');
         formattedContent.push(
@@ -50,6 +49,27 @@ const RecipeDisplay: React.FC<RecipeDisplayProps> = ({ recipe, loading }) => {
             <div className="w-24 h-1 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full mx-auto"></div>
           </div>
         );
+        continue;
+      }
+
+      // Section headers with ### or ####
+      if (line.startsWith('###')) {
+        const title = line.replace(/^#+\s*/, '');
+        const headerLevel = (line.match(/^#+/) || [''])[0].length;
+        
+        if (headerLevel === 3) {
+          formattedContent.push(
+            <h3 key={key++} className="text-2xl font-bold text-orange-700 mt-8 mb-4 border-b-2 border-orange-200 pb-2">
+              {title}
+            </h3>
+          );
+        } else if (headerLevel === 4) {
+          formattedContent.push(
+            <h4 key={key++} className="text-xl font-bold text-orange-600 mt-6 mb-3">
+              {title}
+            </h4>
+          );
+        }
         continue;
       }
 
@@ -89,8 +109,8 @@ const RecipeDisplay: React.FC<RecipeDisplayProps> = ({ recipe, loading }) => {
       }
 
       // List items (starts with • or -)
-      if (line.startsWith('•') || line.startsWith('-')) {
-        const listItem = line.replace(/^[•-]\s*/, '');
+      if (line.startsWith('•') || line.startsWith('-') || line.startsWith('*')) {
+        const listItem = line.replace(/^[•\-*]\s*/, '');
         formattedContent.push(
           <div key={key++} className="flex items-start mb-2">
             <span className="text-orange-500 mr-3 mt-1">•</span>
@@ -117,6 +137,23 @@ const RecipeDisplay: React.FC<RecipeDisplayProps> = ({ recipe, loading }) => {
         }
       }
 
+      // Numbered steps without periods (like "1 Step one")
+      if (/^\d+\s+\S/.test(line)) {
+        const match = line.match(/^(\d+)\s+(.+)$/);
+        if (match) {
+          const [, number, content] = match;
+          formattedContent.push(
+            <div key={key++} className="flex items-start mb-3">
+              <span className="bg-orange-100 text-orange-700 rounded-full w-6 h-6 flex items-center justify-center text-sm font-semibold mr-3 mt-0.5 flex-shrink-0">
+                {number}
+              </span>
+              <span className="text-gray-700 leading-relaxed">{content}</span>
+            </div>
+          );
+          continue;
+        }
+      }
+
       // Bold text
       if (line.startsWith('**') && line.endsWith('**')) {
         const boldText = line.replace(/^\*\*/, '').replace(/\*\*$/, '');
@@ -129,7 +166,7 @@ const RecipeDisplay: React.FC<RecipeDisplayProps> = ({ recipe, loading }) => {
       }
 
       // Italic text (demo text)
-      if (line.startsWith('*') && line.endsWith('*')) {
+      if (line.startsWith('*') && line.endsWith('*') && !line.startsWith('**')) {
         const italicText = line.replace(/^\*/, '').replace(/\*$/, '');
         formattedContent.push(
           <p key={key++} className="italic text-gray-600 text-sm mt-4 p-3 bg-orange-50 rounded-lg border-l-4 border-orange-200">
